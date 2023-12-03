@@ -30,5 +30,42 @@ public class Enterprise {
         }
         System.out.println(" ... successfully connected");
 
+        mainMenu(conn, 1);
+
+    }
+
+    /***
+     * 
+     * @param conn
+     * @param menuType- 0. Main Menu, 1. Tenant Menu
+     */
+    public static void mainMenu(Connection conn, int menuType){
+        Menu menu = new Menu();
+        int temp = 0;
+        int num = 0;
+        switch(menuType){
+            case 0:
+                num = menu.printMenu(conn);
+                break;
+            case 1:
+                num = menu.printTenantMenu(conn);
+                break;
+        }    
+        while(num == -1){
+            mainMenu(conn, 0);
+        }
+    
+        if(num == 5){
+            try {
+                if (conn != null && !conn.isClosed()) {
+                    // Close the connection
+                    System.out.println("Closing connection...");
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            System.exit(0);
+        }
     }
 }

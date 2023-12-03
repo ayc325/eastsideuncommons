@@ -1,5 +1,6 @@
-
-
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.YearMonth;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -123,5 +124,48 @@ public class Validator {
 
         // Return true if the routing number matches the pattern
         return matcher.matches();
+    }
+
+    /***
+     * 
+     * @param id
+     * @param personType- 1. Tenant, 2. Property Manager, 3. Company Manager, 4. Financial Manager
+     * @param conn
+     * @return
+     */
+    public static boolean idInData(int id, int personType, Connection conn){
+        String query = " ";
+        switch(personType){
+            case 1: //tenant
+                query = "SELECT COUNT(*) FROM tenants WHERE tenantid = ?";
+                break;
+            case 2: //property
+                query = "SELECT COUNT(*) FROM employees WHERE permissions = 'Property' AND employeeid = ?";
+                break;
+            case 3: //company
+                query = "SELECT COUNT(*) FROM employees WHERE permissions = 'Full' AND employeeid = ?";
+                break;
+            case 4: //financial
+                query = "SELECT COUNT(*) FROM employees WHERE permissions = 'Finance' AND employeeid = ?";
+                break;
+        }
+        
+        try(PreparedStatement prepdstatement = conn.prepareStatement(query)){
+            prepdstatement.setInt(1, id);
+            //prepdstatement.setString(2, semester);
+            ResultSet rs = prepdstatement.executeQuery();
+            if(rs.next()){
+                int count = rs.getInt(1);
+                if(count > 0){
+                    return true; //semester exists
+                }
+            }
+
+        }
+        catch(Exception e){
+            e.printStackTrace();
+
+        }
+        return false;
     }
 }
