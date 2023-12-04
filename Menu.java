@@ -117,7 +117,13 @@ public class Menu {
                     tenant.updateAmountDue(2, id, conn);
                     break;
                 case 3:
-                    printUpdateDataMenu();
+                    int updateDataInput = printUpdateDataMenu();
+                    if(updateDataInput > 0 && updateDataInput < 5){
+                        tenant.updateTenantData(updateDataInput, id, conn);
+                    }else if(updateDataInput == 5){
+                        System.out.println("Go to Tenant Menu");
+                        break;
+                    }
                     break;
                 case 4:
                     return -1;
@@ -133,16 +139,31 @@ public class Menu {
      * First Name, Middle Initial, Last Name, Phone Number, Date of Birth, Payment Method
      * @return void
      */
-    public void printUpdateDataMenu(){
-        System.out.println("Which data would you like to update?");
-        System.out.println("1. First Name");
-        System.out.println("2. Middle Initial");
-        System.out.println("3. Last Name");
-        System.out.println("4. Phone Number");
-        System.out.println("5. Date of Birth"); //Make sure it's in DD-MON-YY format
-        System.out.println("6. Payment Method");
-        System.out.println("7. Return to Tenant Menu");
-        //Make sure number is valid in Enterprise.java
+    public int printUpdateDataMenu(){
+        Scanner scnr = new Scanner(System.in);
+        int input = 0;
+        while(input == 0){
+            System.out.println("Which data would you like to update?");
+            System.out.println("1. Name");
+            System.out.println("2. Phone Number");
+            System.out.println("3. Date of Birth"); //Make sure it's in DD-MON-YY format
+            System.out.println("4. Payment Method");
+            System.out.println("5. Return to Tenant Menu");
+            //Make sure number is valid in Enterprise.java
+            if(scnr.hasNextInt()){
+                input = scnr.nextInt();
+                if(input > 0 && input < 6){
+                    return input;
+                }else{
+                    input = 0;
+                    break;
+                }
+            }else{
+                input = 0;
+                System.out.println("Invalid input. Try Again. Input must be between 1-5.");
+            }
+        }
+        return input;
     }
     /***
      * Prints Menu for Property Manager

@@ -176,8 +176,21 @@ public class Tenant {
             }
             return 0.0;
     } 
-    public static double makeRentPayment(int id, Connection conn){
-        return 0.0;
-    } 
+
+    public static void updateTenantData(int type, int id, Connection conn){
+        switch(type){
+            case 1:
+                //Name
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            default:
+                break; 
+        }
+    }
 }
 
