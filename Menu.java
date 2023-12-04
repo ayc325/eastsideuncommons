@@ -70,10 +70,10 @@ public class Menu {
             System.out.println("Please enter the tenant id: ");
             System.out.println("Press 1 for 'Help, I came into this menu by accident!'");
             //for graders
-                System.out.println("For Graders: tenantid 267700 should have 1790.23 amount due, so unpaid");
-                System.out.println("tenantid 466266 should be paid");
-                System.out.println("List of unpaid tenantid: 267700, 751043, 765542, 976396");
-                System.out.println("List of paid tenantid: 466266, 134659, 227886, 536494");
+                // System.out.println("For Graders: tenantid 267700 should have 1790.23 amount due, so unpaid");
+                // System.out.println("tenantid 466266 should be paid");
+                // System.out.println("List of unpaid tenantid: 267700, 751043, 765542, 976396");
+                // System.out.println("List of paid tenantid: 466266, 134659, 227886, 536494");
             if(scnr.hasNextInt()){
                 tempId = scnr.nextInt();
                 //exit to previous menu
@@ -108,10 +108,13 @@ public class Menu {
             }
             switch(input){
                 case 1:
-                    System.out.println(tenant.checkPaymentStatus(id, conn));
+                    System.out.println("Rent is: $" + tenant.monthlyRent(id, conn));
+                    System.out.println("Monthly Charge is: $" + tenant.monthlyCharge(id, conn));
+                    System.out.println(tenant.checkPaymentStatus(id, conn)); //new amount due
                     break;
                 case 2:
-                    printPropertyMenu();
+                    System.out.println(tenant.checkPaymentStatus(id, conn));
+                    tenant.updateAmountDue(2, id, conn);
                     break;
                 case 3:
                     printUpdateDataMenu();
