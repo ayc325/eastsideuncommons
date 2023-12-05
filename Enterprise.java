@@ -24,11 +24,12 @@ public class Enterprise {
             // //… Do Actual Work ….
             // stmt.close();
             // conn.close();
+            System.out.println(" ... successfully connected");
 
         } catch (SQLException sqle) {
             System.out.println("SQLException : " + sqle);
         }
-        System.out.println(" ... successfully connected");
+        
 
         mainMenu(conn, 1);
 

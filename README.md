@@ -16,6 +16,7 @@
 4. Apartment Buildings only: Properties are the Apartment Building itself and Apartments = apartment units so you cannot add apartments unless you add a new property. The company only invests in apartment buildings in cities.
 5. All monthly charges from amenities are always included in full so tenants do not have the option to opt-out of amenity fees
 6. We assume that tenants have enough money for rent since in real life, property managers cannot check tenants' bank accounts.
+7. Amex is not accepted due to high transaction fee. Only 16 digit card number are accepted.
 
 ## Classes
 

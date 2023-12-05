@@ -168,4 +168,36 @@ public class Validator {
         }
         return false;
     }
+
+    public static boolean isValidName(String firstName) {
+        // Regex pattern: starts with a capital letter, followed by lowercase letters
+        String regex = "^[A-Z][a-z]*$";
+
+        // Compile the regex pattern
+        Pattern pattern = Pattern.compile(regex);
+
+        // Check if the firstName matches the pattern
+        return pattern.matcher(firstName).matches();
+    }
+
+    public static boolean isValidMiddleInitial(String middleInitial) {
+        // Regex pattern: a single capital letter
+        String regex = "^[A-Z]$";
+    
+        // Compile the regex pattern
+        Pattern pattern = Pattern.compile(regex);
+    
+        // Check if the middleInitial matches the pattern
+        return pattern.matcher(middleInitial).matches();
+    }
+
+    public static boolean isValidPhoneNumber(String phoneNumber) {
+        // Define the regex pattern for a phone number with the desired length
+        String regex = "\\d{10}";
+
+        // Check if the phone number matches the pattern
+        return Pattern.matches(regex, phoneNumber);
+    }
+
+
 }

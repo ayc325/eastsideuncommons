@@ -117,11 +117,11 @@ public class Menu {
                     tenant.updateAmountDue(2, id, conn);
                     break;
                 case 3:
-                    int updateDataInput = printUpdateDataMenu();
+                    int updateDataInput = printUpdateDataMenu(1);
                     if(updateDataInput > 0 && updateDataInput < 5){
                         tenant.updateTenantData(updateDataInput, id, conn);
-                    }else if(updateDataInput == 5){
-                        System.out.println("Go to Tenant Menu");
+                    }else if(updateDataInput == 4){
+                        //System.out.println("Go to Tenant Menu");
                         break;
                     }
                     break;
@@ -137,30 +137,56 @@ public class Menu {
     /***
      * Prints all options for tenants to update their Personal Data
      * First Name, Middle Initial, Last Name, Phone Number, Date of Birth, Payment Method
-     * @return void
+     * @param type 1. update data from tenants 2. add person to lease
+     * @return int
      */
-    public int printUpdateDataMenu(){
+    public int printUpdateDataMenu(int type){
         Scanner scnr = new Scanner(System.in);
         int input = 0;
-        while(input == 0){
-            System.out.println("Which data would you like to update?");
-            System.out.println("1. Name");
-            System.out.println("2. Phone Number");
-            System.out.println("3. Date of Birth"); //Make sure it's in DD-MON-YY format
-            System.out.println("4. Payment Method");
-            System.out.println("5. Return to Tenant Menu");
-            //Make sure number is valid in Enterprise.java
-            if(scnr.hasNextInt()){
-                input = scnr.nextInt();
-                if(input > 0 && input < 6){
-                    return input;
+        if(type == 1){//tenant
+            while(input == 0){
+                System.out.println("Which data would you like to update?");
+                System.out.println("1. Name");
+                System.out.println("2. Phone Number");
+                //System.out.println("3. Date of Birth"); //Make sure it's in DD-MON-YY format
+                System.out.println("3. Payment Method");
+                System.out.println("4. Return to Tenant Menu");
+                //Make sure number is valid in Enterprise.java
+                if(scnr.hasNextInt()){
+                    input = scnr.nextInt();
+                    if(input > 0 && input < 5){
+                        return input;
+                    }else{
+                        input = 0;
+                        break;
+                    }
                 }else{
                     input = 0;
-                    break;
+                    System.out.println("Invalid input. Try Again. Input must be between 1-5.");
                 }
-            }else{
-                input = 0;
-                System.out.println("Invalid input. Try Again. Input must be between 1-5.");
+            }
+        }else if(type == 2){//property manager
+            while(input == 0){
+                System.out.println("Which data would you like to add?");
+                System.out.println("1. Name");
+                System.out.println("2. Phone Number");
+                System.out.println("3. Date of Birth"); //Make sure it's in DD-MON-YY format
+                System.out.println("4. Payment Method");
+                System.out.println("5. Visit Status");
+                System.out.println("6. Return to Tenant Menu");
+                //Make sure number is valid in Enterprise.java
+                if(scnr.hasNextInt()){
+                    input = scnr.nextInt();
+                    if(input > 0 && input < 7){
+                        return input;
+                    }else{
+                        input = 0;
+                        break;
+                    }
+                }else{
+                    input = 0;
+                    System.out.println("Invalid input. Try Again. Input must be between 1-6.");
+                }
             }
         }
         return input;
@@ -246,7 +272,7 @@ public class Menu {
      * Lets tenant edit payment method
      * @return void
      */
-    public void printPaymentTypeMenu(){
+    public List<String> printPaymentTypeMenu(){
         /*
          * 1. Select Payment Type
          *      1. Credit/Debit
@@ -260,8 +286,9 @@ public class Menu {
          *          3. Account Number
          */
         int menuOption = 0;
+        List<String> result = new ArrayList<>();
         Scanner scnr = new Scanner(System.in);
-        System.out.println("Select Payment Type: \nPress q to abort process at any time.");
+        System.out.println("Select Payment Type:");
         System.out.println("1. Credit Card");
         System.out.println("2. Debit Card");
         System.out.println("3. Checking Account");
@@ -270,10 +297,6 @@ public class Menu {
         if(scnr.hasNextInt()){
             menuOption = scnr.nextInt();
         }else{
-            if(scnr.nextLine().equalsIgnoreCase("q")){
-                System.out.println("Aborting...");
-                printUpdateDataMenu();
-            }
             System.out.println("Not a number. Options 1-5 only.");
             printPaymentTypeMenu();
         }
@@ -281,19 +304,27 @@ public class Menu {
         switch(menuOption){
             case 1:
             case 2:
-                printCardOptionMenu(menuOption);
-                break;
+                result = printCardOptionMenu(menuOption);
+                if(result != null){
+                    return result;
+                }else{
+                    break;
+                }
             case 3:   
             case 4:
-                printAccountOptionMenu(menuOption);
-                break;
+                result = printAccountOptionMenu(menuOption);
+                if(result != null){
+                    return result;
+                }else{
+                    break;
+                }
             case 5:
-                printUpdateDataMenu();
+                printUpdateDataMenu(1);
                 break;
             default:
-                printPaymentTypeMenu();
-                break;
+                return null;
         }
+        return null;
 
     }
     /***
@@ -339,6 +370,7 @@ public class Menu {
                     if(validator.isValidCVCNumber(cvcNum)){
                         cardInfo.add(cvcNum);
                     }else if(cvcNum.equalsIgnoreCase("q")){
+                            //cardInfo.add("q");
                             System.out.println("Aborting...\n");
                             //printPaymentTypeMenu();
                             return null;
@@ -351,6 +383,7 @@ public class Menu {
                         if(validator.isValidExpirationDate(expDate)){
                             cardInfo.add(expDate);
                         }else if(expDate.equalsIgnoreCase("q")){
+                                //cardInfo.add("q");
                                 System.out.println("Aborting...\n");
                                 //printPaymentTypeMenu();
                                 return null;
@@ -394,6 +427,7 @@ public class Menu {
                 if(validator.isValidAccountNumber(acctNum)){
                     accountInfo.add(acctNum);
                 }else if(acctNum.equalsIgnoreCase("q")){
+                        //accountInfo.add("q");
                         System.out.println("Aborting...\n");
                         return null;
                         //printPaymentTypeMenu(); //call this in the main method, not here...
@@ -406,6 +440,7 @@ public class Menu {
                     if(validator.isValidRoutingNumber(routingNum)){
                         accountInfo.add(routingNum);
                     }else if(routingNum.equalsIgnoreCase("q")){
+                            //accountInfo.add("q");
                             System.out.println("Aborting...\n");
                             return null;
                             //printPaymentTypeMenu();
