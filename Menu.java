@@ -28,7 +28,7 @@ public class Menu {
             case 1:
                 return printTenantMenu(conn);
             case 2:
-                printPropertyMenu();
+                printPropertyMenu(conn);
                 return 0;
             case 3:
                 printCompanyMenu();
@@ -165,29 +165,6 @@ public class Menu {
                     System.out.println("Invalid input. Try Again. Input must be between 1-5.");
                 }
             }
-        }else if(type == 2){//property manager
-            while(input == 0){
-                System.out.println("Which data would you like to add?");
-                System.out.println("1. Name");
-                System.out.println("2. Phone Number");
-                System.out.println("3. Date of Birth"); //Make sure it's in DD-MON-YY format
-                System.out.println("4. Payment Method");
-                System.out.println("5. Visit Status");
-                System.out.println("6. Return to Tenant Menu");
-                //Make sure number is valid in Enterprise.java
-                if(scnr.hasNextInt()){
-                    input = scnr.nextInt();
-                    if(input > 0 && input < 7){
-                        return input;
-                    }else{
-                        input = 0;
-                        break;
-                    }
-                }else{
-                    input = 0;
-                    System.out.println("Invalid input. Try Again. Input must be between 1-6.");
-                }
-            }
         }
         return input;
     }
@@ -195,7 +172,13 @@ public class Menu {
      * Prints Menu for Property Manager
      * @return void
      */
-    public void printPropertyMenu(){
+    public int printPropertyMenu(Connection conn){
+        Scanner scnr = new Scanner(System.in);
+        int input = 0;
+        Property property = new Property();
+        Validator validator = new Validator();
+        int id = 1;
+        int tempId = 0;
         /*
          * Remember to validate who's a Property Manager.
          * 1. Record Visit Data
@@ -206,12 +189,53 @@ public class Menu {
          *      a. Gives a list of inputs to ask person
          *      b. First Name, Middle Initial, Last Name, Phone Number, Date of Birth
          */
-        System.out.println("Property Manager Menu");
-        System.out.println("1. Record Visit Data");
-        System.out.println("2. Record Lease Data");
-        System.out.println("3. Record Move-out Data");
-        System.out.println("4. Add Person to a Lease");
-        System.out.println("5. Exit Property Manager Menu");
+        do{
+            //Enter Tenant ID
+            System.out.println("Please enter the property manager id: ");
+            System.out.println("Press 1 for 'Help, I came into this menu by accident!'");
+
+            if(scnr.hasNextInt()){
+                tempId = scnr.nextInt();
+                //exit to previous menu
+                if(tempId == 1){ 
+                    return -1; 
+                }
+                if(validator.idInData(tempId, 2, conn)){
+                    id = tempId;
+                    System.out.println("Login Success!");
+                }else if(tempId != 1 && !validator.idInData(tempId, 2, conn)){
+                    System.out.println("Invalid Property Manager ID.  Try Again.\n");
+                }
+                
+            }else{
+                System.out.println("Not a number.  Try Again.");
+                System.out.println("If need to add tenant, contact the Property Manager.");
+                scnr.nextLine();
+            }
+        }
+        while(id == 1);
+
+        while(input == 0){
+            System.out.println("Property Manager Menu");
+            System.out.println("1. Record Visit Data");
+            System.out.println("2. Record Lease Data");
+            System.out.println("3. Record Move-out Data");
+            System.out.println("4. Add Person to a Lease");
+            System.out.println("5. Exit Property Manager Menu");
+            if(scnr.hasNextInt()){
+                input = scnr.nextInt();
+                if(input > 0 && input < 7){
+                    return input;
+                }else{
+                    input = 0;
+                }
+            }else{
+                input = 0;
+                System.out.println("Invalid input. Try Again. Input must be between 1-6.");
+            }
+        }
+       
+        return input;
         //Make sure number is valid in Enterprise.java
 
     }

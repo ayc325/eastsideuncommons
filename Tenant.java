@@ -92,6 +92,10 @@ public class Tenant {
         }
         //make rent payment
         else if(type == 2){
+            if(amountDue(id, conn) == 0.0){
+                System.out.println("Already Paid");
+                return 0.0;
+            }
             query = "UPDATE tenants SET amount_due = 0.0, payment_status = 'PAID' WHERE tenantid = ?";
             try(PreparedStatement prepdstatement = conn.prepareStatement(query)){
                 prepdstatement.setInt(1, id);
