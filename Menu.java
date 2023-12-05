@@ -118,7 +118,7 @@ public class Menu {
                     break;
                 case 3:
                     int updateDataInput = printUpdateDataMenu(1);
-                    if(updateDataInput > 0 && updateDataInput < 5){
+                    if(updateDataInput > 0 && updateDataInput < 4){
                         tenant.updateTenantData(updateDataInput, id, conn);
                     }else if(updateDataInput == 4){
                         //System.out.println("Go to Tenant Menu");
