@@ -31,7 +31,7 @@ public class Enterprise {
         }
         
 
-        mainMenu(conn, 1);
+        mainMenu(conn, 0);
 
     }
 
@@ -51,6 +51,8 @@ public class Enterprise {
             case 1:
                 num = menu.printTenantMenu(conn);
                 break;
+            case 2:
+                num = menu.printPropertyMenu(conn);
         }    
         while(num == -1){
             mainMenu(conn, 0);

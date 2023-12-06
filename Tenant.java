@@ -180,6 +180,12 @@ public class Tenant {
             }
             return 0.0;
     } 
+    /***
+     * 
+     * @param id
+     * @param conn
+     * @return
+     */
     public static int getPersonID(int id, Connection conn){
         String query = "SELECT personid FROM tenants WHERE tenantid = ?";
         try(PreparedStatement prepdstatement = conn.prepareStatement(query)){
@@ -377,7 +383,13 @@ public class Tenant {
         return name;
     }
 
-
+    /***
+     * 
+     * @param name
+     * @param personId
+     * @param conn
+     * @return
+     */
     public static String updateName(List<String> name, int personId, Connection conn){
         String firstName = name.get(0);
         String middleInitial = name.get(1);
@@ -413,6 +425,42 @@ public class Tenant {
 
         }
         return result;
+    }
+
+    public static String getName(int personId, Connection conn) {
+        // SQL query to retrieve person data
+        String query = "SELECT first_name, middle_initial, last_name FROM persons WHERE personid = ?";
+
+        try (
+            // Create a PreparedStatement with the SQL query
+            PreparedStatement preparedStatement = conn.prepareStatement(query);
+        ) {
+            // Set the person ID parameter in the PreparedStatement
+            preparedStatement.setInt(1, personId);
+
+            // Execute the query
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    // Retrieve data from the result set
+                    String firstName = rs.getString("first_name");
+                    String middleInitial = rs.getString("middle_initial");
+                    String lastName = rs.getString("last_name");
+
+                    // Build the final return string based on the presence of middle initial
+                    if (middleInitial != null && !middleInitial.isEmpty()) {
+                        return firstName + " " + middleInitial + " " + lastName;
+                    } else {
+                        return firstName + " " + lastName;
+                    }
+                } else {
+                    return "Person not found";
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error retrieving data";
+        }
     }
 }
 

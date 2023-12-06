@@ -65,6 +65,7 @@ public class Menu {
         int input = 0;
         int id = 1;
         int tempId = 0;
+        String name = " ";
         do{
             //Enter Tenant ID
             System.out.println("Please enter the tenant id: ");
@@ -82,7 +83,9 @@ public class Menu {
                 }
                 if(validator.idInData(tempId, 1, conn)){
                     id = tempId;
+                    name = tenant.getName(tenant.getPersonID(id, conn), conn);
                     System.out.println("Login Success!");
+                    System.out.println("Welcome " + name + "!");
                 }else if(tempId != 1 && !validator.idInData(tempId, 1, conn)){
                     System.out.println("Invalid Tenant ID.  Try Again.\n");
                 }
@@ -215,7 +218,7 @@ public class Menu {
         }
         while(id == 1);
 
-        while(input == 0){
+        do{
             System.out.println("Property Manager Menu");
             System.out.println("1. Record Visit Data");
             System.out.println("2. Record Lease Data");
@@ -224,16 +227,26 @@ public class Menu {
             System.out.println("5. Exit Property Manager Menu");
             if(scnr.hasNextInt()){
                 input = scnr.nextInt();
-                if(input > 0 && input < 7){
-                    return input;
-                }else{
-                    input = 0;
+                switch(input){
+                    case 1:
+                        int recordVisitDataOutput = property.recordVisitData(conn);
+                        if(recordVisitDataOutput  == 0){
+                            //System.out.println("Go to Property Manager Menu");
+                            break;
+                        }
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                        return -1;
+                    default:
+                        System.out.println("Invalid Input. Only options 1-5. Try Again");
                 }
             }else{
                 input = 0;
                 System.out.println("Invalid input. Try Again. Input must be between 1-6.");
             }
-        }
+        }while(validator.idInData(tempId, 2, conn));
        
         return input;
         //Make sure number is valid in Enterprise.java

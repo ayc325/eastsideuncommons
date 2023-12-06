@@ -1,9 +1,14 @@
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.YearMonth;
+import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Date;
+import java.util.*;
 
 public class Validator {
     /**
@@ -148,6 +153,18 @@ public class Validator {
             case 4: //financial
                 query = "SELECT COUNT(*) FROM employees WHERE permissions = 'Finance' AND employeeid = ?";
                 break;
+            case 5: //prosp_tenant
+                query = "SELECT COUNT(*) FROM prospectivetenants WHERE prosp_tenantid = ?";
+                break;
+            case 6: //personid
+                query = "SELECT COUNT(*) FROM persons WHERE personid = ?";
+                break;
+            case 7: //property id
+                query = "SELECT COUNT(*) FROM properties WHERE propertyid = ?";
+                break;
+            case 8: //apartment id
+                query = "SELECT COUNT(*) FROM apartments WHERE apartmentid = ?";
+                break;
         }
         
         try(PreparedStatement prepdstatement = conn.prepareStatement(query)){
@@ -157,7 +174,11 @@ public class Validator {
             if(rs.next()){
                 int count = rs.getInt(1);
                 if(count > 0){
+                    System.out.println("ID exists in database");
                     return true; //semester exists
+                }else{
+                    System.out.println("ID does not exist in database");
+                    return false;
                 }
             }
 
@@ -168,6 +189,8 @@ public class Validator {
         }
         return false;
     }
+
+    
 
     public static boolean isValidName(String firstName) {
         // Regex pattern: starts with a capital letter, followed by lowercase letters
@@ -197,6 +220,57 @@ public class Validator {
 
         // Check if the phone number matches the pattern
         return Pattern.matches(regex, phoneNumber);
+    }
+
+    public static boolean isValidBirthdate(String birthdate) {
+        // Define the regex pattern for MM/DD/YYYY
+        String regex = "^(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])/((19|20)\\d\\d)$";
+        Pattern pattern = Pattern.compile(regex);
+
+        // Check if the birthdate matches the regex pattern
+        Matcher matcher = pattern.matcher(birthdate);
+        if (!matcher.matches()) {
+            System.out.println("Invalid date format. Please use MM/DD/YYYY.");
+            return false;
+        }
+
+        // Parse the birthdate string to a Date object
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        dateFormat.setLenient(false);
+
+        try {
+            Date birthDate = dateFormat.parse(birthdate);
+
+            // Get the current date
+            Date currentDate = new Date();
+
+            // Create Calendar instances for birthdate and current date
+            Calendar birthCalendar = Calendar.getInstance();
+            birthCalendar.setTime(birthDate);
+
+            Calendar currentCalendar = Calendar.getInstance();
+            currentCalendar.setTime(currentDate);
+
+            // Verify that the birthdate is not in the future
+            if (birthCalendar.after(currentCalendar)) {
+                System.out.println("Birthdate cannot be in the future.");
+                return false;
+            }
+
+            // Verify that the person is not over 120 years old
+            birthCalendar.add(Calendar.YEAR, 120);
+            if (birthCalendar.before(currentCalendar)) {
+                System.out.println("Person is over 120 years old.");
+                return false;
+            }
+
+            // If both conditions pass, the birthdate is valid
+            return true;
+
+        } catch (ParseException e) {
+            System.out.println("Invalid date format. Please use MM/DD/YYYY.");
+            return false;
+        }
     }
 
 
