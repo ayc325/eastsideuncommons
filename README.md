@@ -9,8 +9,7 @@
 
 ## Assumptions
 
-1. Start Date: The date in the program is Jan 1, 2024 (might change this date) while running the program. 
-    Basically saying if you add a new tenant while you run the program, their move-in date will automatically be set to Jan 1, 2024
+1. Start Date: Many of the early data's tenant term is 12 months and move out date was set 12 months out from January 1, 2024 (might change this date) while running the program. 
 2. Move-out Date: All move-out dates are 12 months out from move-in date
 3. No Pets: Many properties in real life do not allow pets due to property damage so my Eastside Uncommons also does not allow pets to keep costs low.
 4. Apartment Buildings only: Properties are the Apartment Building itself and Apartments = apartment units so you cannot add apartments unless you add a new property. The company only invests in apartment buildings in cities.

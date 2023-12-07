@@ -25,15 +25,22 @@ public class Property {
     public static int recordVisitData(Connection conn){
         Scanner scnr = new Scanner(System.in);
         Randomize randomize = new Randomize();
+        Validator validator = new Validator();
         List<Integer> emptyAptId = new ArrayList<>();
         List<Integer> visitedAptId = new ArrayList<>();
         int tempApt = 1;
         int numVisitedApt = 0;
+        int tempId = 0;
         int personId = addPerson(conn);
         if(personId == 0){
             return 0;
         }
         //no duplicates to assign a new prosp_tenantid, but there can be duplicates in the table when recording apt_id data
+        System.out.println("Enter a prospective tenant id");
+        if(scnr.hasNextInt()){
+            tempId = scnr.nextInt();
+            //if()
+        }
         int prosp_tenantid = randomize.randomizeID(2, conn); 
         //addProspTenant(conn, prosp_tenantid, personId);
         
@@ -65,22 +72,55 @@ public class Property {
         numVisitedApt = addVisitedApartment(conn, prosp_tenantid, personId, visitedAptId);
 
         //insert numVisitedApt into visit_status in person table
+        //System.out.println(numVisitedApt);
+        //System.out.println(personId);
         addVisitStatus(numVisitedApt, personId, conn);
         
-        System.out.println("Prospective Tenant: " + prosp_tenantid + " has visited " + selectVisitStatus(personId, conn) + "apartments.");
+        System.out.println("Prospective Tenant: " + prosp_tenantid + " has visited " + selectVisitStatus(personId, conn) + " apartments.");
         System.out.println("Those apartments are: ");
         for(int j = 0; j < visitedAptId.size(); j++){
            System.out.println(visitedAptId.get(j));
         }
         return 0;
     }
+    /***
+     * record lease data: records tenant term, 
+     * @param conn
+     */
     public static void recordLeaseData(Connection conn){
+        
+    }
+    public static void setMoveOutDate(Connection conn){
+        //
+    }
+    public static void recordMoveOut(Connection conn){
 
     }
-    public static void recordMoveOutData(Connection conn){
-
-    }
+    /***
+     * generates a random unique tenant id
+     * if prosp_tenant id exists, then use person data, if it doesn't exist, add a person
+     * set a move out date (12 months out from current date)
+     * assign tenantid to apartments table
+     * take rent from apartments table and sync it with rent in tenant table
+     * set payment status to unpaid
+     * set amount due to security deposit
+     * 
+     * @param conn
+     */
     public static void addPersonToLease(Connection conn){
+        Scanner scnr = new Scanner(System.in);
+        Randomize randomize = new Randomize();
+        Validator validator = new Validator();
+        int tenantid = randomize.randomizeID(5, conn);
+        int tempId = 0;
+        //if prosp_tenant id exists (if person id exists)
+        System.out.println("Enter a prospective tenant to add to the lease: ");
+        if(scnr.hasNextInt()){
+            tempId = scnr.nextInt();
+            if(validator.idInData(tempId, 2, conn)){
+
+            }
+        }
 
     }
     public static int selectVisitStatus(int personId, Connection conn){
@@ -157,7 +197,8 @@ public class Property {
     public static int addVisitedApartment(Connection conn, int prosp_tenantid, int personId, List<Integer> visitedApt){
         String query = " ";
         int rowsAffected = 0;
-        for(int i = 0; i < visitedApt.size(); i++){
+        if(visitedApt != null){
+            for(int i = 0; i < visitedApt.size(); i++){
             query = "INSERT INTO prospectivetenants (prosp_tenantid, personid, apartmentid) VALUES (?, ?, ?)";
             try(PreparedStatement prepdstatement = conn.prepareStatement(query)){
                 prepdstatement.setInt(1, prosp_tenantid);
@@ -177,6 +218,9 @@ public class Property {
                 e.printStackTrace();
 
             }
+            }
+        }else{
+            System.out.println("Prospective tenant not added because they did not visit");
         }
         return rowsAffected;
     }

@@ -28,8 +28,7 @@ public class Menu {
             case 1:
                 return printTenantMenu(conn);
             case 2:
-                printPropertyMenu(conn);
-                return 0;
+                return printPropertyMenu(conn);
             case 3:
                 printCompanyMenu();
                 return 0;
@@ -234,9 +233,13 @@ public class Menu {
                             //System.out.println("Go to Property Manager Menu");
                             break;
                         }
+                        break;
                     case 2:
+                        break;
                     case 3:
+                        break;
                     case 4:
+                        break;
                     case 5:
                         return -1;
                     default:

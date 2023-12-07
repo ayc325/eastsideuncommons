@@ -53,6 +53,8 @@ public class Enterprise {
                 break;
             case 2:
                 num = menu.printPropertyMenu(conn);
+                System.out.println(num);
+                break;
         }    
         while(num == -1){
             mainMenu(conn, 0);
