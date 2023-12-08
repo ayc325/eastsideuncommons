@@ -193,6 +193,7 @@ public class Menu {
          */
         do{
             //Enter Tenant ID
+            System.out.println("Property Manager ID: 1975");
             System.out.println("Please enter the property manager id: ");
             System.out.println("Press 1 for 'Help, I came into this menu by accident!'");
 
@@ -235,6 +236,7 @@ public class Menu {
                         }
                         break;
                     case 2:
+                        property.recordLeaseData(conn);
                         break;
                     case 3:
                         int movedOutTenants = property.recordMoveOut(conn);
@@ -276,9 +278,11 @@ public class Menu {
          *          i. Each apartment should have randomnly set apartment id, monthly_rent, security_deposit, apt_size, bed, bath, and private amenities (optional)
          *              1. Private amenity options: LAUNDRY, PARKING, DISHWASHER and add monthly charge
          */
+        System.out.println("Company Manager ID: 9995");
         System.out.println("Company Manager Menu");
         System.out.println("1. Add new Property");
-        System.out.println("3. Exit Company Manager Menu");
+        
+        System.out.println("2. Exit Company Manager Menu");
         //make sure to utilize Randomize.java to create Property
     }
     /***

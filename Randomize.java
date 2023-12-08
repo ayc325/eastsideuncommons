@@ -37,6 +37,10 @@ public class Randomize {
                 min = 100000;
                 max = 999999;
                 break;
+            case 6: //apartment numbers
+                min = 100;
+                max = 499;
+                break;
         default:
             throw new IllegalArgumentException("Invalid ID type");
     }
@@ -67,6 +71,8 @@ public class Randomize {
                 case 5: //tenant id
                     isNotUnique = validator.idInData(generatedID, 1, conn);
                     break;
+                case 6: //apartment numbers
+                    isNotUnique = validator.idInData(generatedID, 1, conn);
             }
         } while(isNotUnique == true);
 

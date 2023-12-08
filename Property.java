@@ -44,28 +44,32 @@ public class Property {
 
         // no duplicates to assign a new prosp_tenantid, but there can be duplicates in
         // the table when recording apt_id data
-        // print all prospective tenants
+        // print all prospective tenants\
         prospectiveTenantId = getProspectiveTenantId(conn);
         System.out.println("Current Propsective IDs: ");
         for (int k = 0; k < prospectiveTenantId.size(); k++) {
             System.out.println(prospectiveTenantId.get(k));
         }
-        System.out.println("Enter a prospective tenant id");
-        if (scnr.hasNextInt()) {
-            tempId = scnr.nextInt();
-            if (validator.idInData(tempId, 5, conn)) {
-                prosp_tenantid = tempId;
-            } else {
-                System.out.println("Prospective tenant doesn't exist");
-                personId = addPerson(conn);
-                if (personId == 0) {
-                    return 0;
+        do{
+            System.out.println("Enter a prospective tenant id");
+            if (scnr.hasNextInt()) {
+                tempId = scnr.nextInt();
+                if (validator.idInData(tempId, 5, conn)) {
+                    prosp_tenantid = tempId;
+                } else {
+                    System.out.println("Prospective tenant doesn't exist");
+                    personId = addPerson(conn);
+                    if (personId == 0) {
+                        return 0;
+                    }
+                    tempId = randomize.randomizeID(2, conn);
+                    System.out.println("New Prospective Tenant ID: " + tempId);
+                    prosp_tenantid = tempId;
                 }
-                prosp_tenantid = randomize.randomizeID(2, conn);
-                System.out.println("New Prospective Tenant ID: " + prosp_tenantid);
-            }
-        }
-
+            }else{
+                System.out.println("Not a number");
+                scnr.nextLine();
+        }}while(prosp_tenantid == 0);
         // addProspTenant(conn, prosp_tenantid, personId);
 
         // print list of empty apartments
@@ -89,6 +93,9 @@ public class Property {
                     System.out.println("Apartment not empty.");
                     tempApt = 1;
                 }
+            }else{
+                System.out.println("Not a number");
+                scnr.nextLine();
             }
         } while (tempApt == 1);
 
@@ -110,13 +117,98 @@ public class Property {
     }
 
     /***
-     * record lease data: records tenant term,
-     * 
+     * record lease data (read-only method)
+     * records all people living in the same apartment unit: get tenantid where property id and apartment num is the same
+     * prints monthly rent per person
+     * prints address of place
      * @param conn
      */
     public static void recordLeaseData(Connection conn) {
-        //
+        Scanner scnr = new Scanner(System.in);
+        Validator validator = new Validator();
+        int tempId = 0;
+        int propertyId = 0;
+        int apt_num = 0;
+
+        //print all propertyid's
+        System.out.println("All Properties: ");
+        for(int i = 0; i < getProperties(conn).size(); i++){
+            System.out.println(getProperties(conn).get(i));
+        }
+        do{
+            System.out.println("For which property would you like to view the lease?");
+            if(scnr.hasNextInt()){
+                tempId = scnr.nextInt();
+                if(validator.idInData(tempId, 7, conn)){
+                    propertyId = tempId;
+                }else{
+                    System.out.println("Property not in data.");
+                }
+            }else{
+                System.out.println("Not a number.");
+                scnr.nextLine();
+            }
+        }while(propertyId == 0);
+        
+        recordPropertyData(propertyId, conn);
+
     }
+
+    public static void recordPropertyData(int propertyId, Connection conn) {
+        String query = "SELECT A.propertyid, A.apt_num, A.monthly_rent, P.first_name, P.last_name " +
+                       "FROM apartments A " +
+                       "LEFT JOIN tenants T ON A.tenantid = T.tenantid " +
+                       "LEFT JOIN persons P ON T.personid = P.personid " +
+                       "WHERE A.propertyid = ?";
+    
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setInt(1, propertyId);
+    
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    int aptNum = resultSet.getInt("apt_num");
+                    double monthlyRent = resultSet.getDouble("monthly_rent");
+                    String firstName = resultSet.getString("first_name");
+                    String lastName = resultSet.getString("last_name");
+    
+                    System.out.println("Property ID: " + propertyId);
+                    System.out.println("Apartment Number: " + aptNum);
+                    System.out.println("Monthly Rent: $" + monthlyRent);
+    
+                    if (firstName != null && lastName != null) {
+                        System.out.println("Tenant: " + firstName + " " + lastName);
+                    } else {
+                        System.out.println("No Tenant");
+                    }
+    
+                    System.out.println("--------");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static List<Integer> getProperties(Connection conn){
+        List<Integer> properties = new ArrayList<>();
+        String query = " ";
+        query = "SELECT propertyid FROM properties";
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                int propertyId = resultSet.getInt("propertyid");
+                properties.add(propertyId);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle or log the exception appropriately
+        }
+        return properties;
+    }
+
+
 
     /***
      * if current date is past move out date, remove tenant row
@@ -126,8 +218,6 @@ public class Property {
      * @param conn
      */
     public static int recordMoveOut(Connection conn) {
-        //
-
         // get moveoutdate
         // save move out dates
         List<String> dates = getMoveOutDate(conn);
@@ -152,8 +242,13 @@ public class Property {
             System.out.println("Tenants that need to move out: ");
             for (int j = 0; j < moveOutTenants.size(); j++) {
                 System.out.println(moveOutTenants.get(j));
+                //removes tenantid from apartment table
+                removeTenantApartment(moveOutTenants.get(j), conn);
+                //removes tenantid from payment table
+                removeTenantPayment(moveOutTenants.get(j), conn);
+                //completed removes tenantid
+                removeTenant(moveOutTenants.get(j), conn);
             }
-            removeTenantApartment(moveOutTenants, conn);
             // remove tenants from tenant row, person information is still saved.
         } else {
             System.out.println("No one needs to move out");
@@ -163,37 +258,70 @@ public class Property {
 
     }
 
-    public static void removeTenant(List<Integer> tenantList, Connection conn) {
-        System.out.println("hello");
-    }
-
-    public static List<Integer> getMoveOutApartments(List<Integer> tenantList, Connection conn) {
-        List<Integer> moveOutTenants = new ArrayList<>();
-        String query = " ";
-        return moveOutTenants;
-    }
-
-    public static void removeTenantApartment(List<Integer> tenantList, Connection conn) {
-        String query = " ";
-        query = "UPDATE apartments SET tenantid = NULL WHERE tenantid = ?";
+    public static void removeTenant(int moveOutTenant, Connection conn) {
+        String query = "DELETE FROM tenants WHERE tenantid = ?";
         try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-            for (int i = 0; i < tenantList.size(); i++) {
-                // Set the parameter before executing the query
-                preparedStatement.setInt(1, tenantList.get(i));
-
-                // Execute the query and get the result set
-                try (ResultSet rs = preparedStatement.executeQuery()) {
-                    // Iterate through the result set and add tenant IDs to the list
-                    while (rs.next()) {
-                        int tenantid = rs.getInt("tenantid");
-                        tenantList.add(tenantid);
-                        System.out.println("Tenant: " + tenantid + "moved out.");
-                    }
-                }
+            // Set the parameter before executing the query
+            preparedStatement.setInt(1, moveOutTenant);
+    
+            // Execute the delete
+            int rowsAffected = preparedStatement.executeUpdate();
+    
+            // Check if the delete was successful
+            if (rowsAffected > 0) {
+                System.out.println("Tenant " + moveOutTenant + " removed.");
+            } else {
+                System.out.println("No tenant found with ID " + moveOutTenant);
+                System.out.println("Delete was successful!");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void removeTenantPayment(int moveOutTenant, Connection conn) {
+        String query = "DELETE FROM payments WHERE tenantid = ?";
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            // Set the parameter before executing the query
+            preparedStatement.setInt(1, moveOutTenant);
+    
+            // Execute the delete
+            int rowsAffected = preparedStatement.executeUpdate();
+    
+            // Check if the delete was successful
+            if (rowsAffected > 0) {
+                System.out.println("Tenant " + moveOutTenant + "'s payment information removed.");
+            } else {
+                System.out.println("No payment info found with ID " + moveOutTenant);
+                System.out.println("Delete was successful!");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static int removeTenantApartment(int moveOutTenant, Connection conn) {
+        //System.out.println("Enters removeTenantApartment");
+        String query = " ";
+        query = "UPDATE apartments SET tenantid = NULL WHERE tenantid = ?";
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+                //System.out.println("Executing query");
+                // Set the parameter before executing the query
+                preparedStatement.setInt(1, moveOutTenant);
+
+                // Execute the update
+                int rowsAffected = preparedStatement.executeUpdate();
+                //System.out.println(rowsAffected);
+
+                // Execute the query and get the result set
+                if (rowsAffected > 0) {
+                    System.out.println("Tenant " + moveOutTenant + " removed from apartment.");
+                    return rowsAffected;
+                }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public static List<Integer> moveOutList(List<String> moveOutDate, Connection conn) {

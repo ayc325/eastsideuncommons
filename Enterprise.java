@@ -28,6 +28,13 @@ public class Enterprise {
 
         } catch (SQLException sqle) {
             System.out.println("SQLException : " + sqle);
+                try {
+                    conn.close();
+                    System.out.println("Connection closed.");
+                } catch (SQLException e) {
+                    System.out.println("Error closing connection: " + e.getMessage());
+                }
+            
         }
         
 
