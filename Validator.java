@@ -174,10 +174,10 @@ public class Validator {
             if(rs.next()){
                 int count = rs.getInt(1);
                 if(count > 0){
-                    System.out.println("ID exists in database");
+                    //System.out.println("ID exists in database");
                     return true; //semester exists
                 }else{
-                    System.out.println("ID does not exist in database");
+                    //System.out.println("ID does not exist in database");
                     return false;
                 }
             }

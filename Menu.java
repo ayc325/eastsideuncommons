@@ -229,7 +229,7 @@ public class Menu {
                 switch(input){
                     case 1:
                         int recordVisitDataOutput = property.recordVisitData(conn);
-                        if(recordVisitDataOutput  == 0){
+                        if(recordVisitDataOutput == 0){
                             //System.out.println("Go to Property Manager Menu");
                             break;
                         }
@@ -237,8 +237,17 @@ public class Menu {
                     case 2:
                         break;
                     case 3:
+                        int movedOutTenants = property.recordMoveOut(conn);
+                        if(movedOutTenants == 0){
+
+                        }
                         break;
                     case 4:
+                        int isTenant = property.addPersonToLease(conn);
+                        if(isTenant == -1){
+                            //System.out.println("Go to Property Manager Menu");
+                            break;
+                        }
                         break;
                     case 5:
                         return -1;
@@ -247,7 +256,8 @@ public class Menu {
                 }
             }else{
                 input = 0;
-                System.out.println("Invalid input. Try Again. Input must be between 1-6.");
+                System.out.println("Not a number");
+                scnr.nextLine();
             }
         }while(validator.idInData(tempId, 2, conn));
        
