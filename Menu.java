@@ -8,6 +8,7 @@ import java.sql.SQLException;
 public class Menu {
     /***
      * Print Main Menu
+     * Selecting Tenant, Property Manager, Company Manager, and Financial Manager options
      * @return void
      */
     public int printMenu(Connection conn){
@@ -45,6 +46,7 @@ public class Menu {
 
     }
     /***
+        * 
         * Prints Menu for Tenants
         * 
         * 1. Check payment status
@@ -55,7 +57,8 @@ public class Menu {
         *      b. If amount due is 0, print a message to let tenant know that there's nothing to pay
         * 3. Update personal data 
         *      a. First Name, Middle Initial, Last Name, Phone Number, Date of Birth
-        * @return void
+        * @paramter Connection conn
+        * @return int 
      */
     public int printTenantMenu(Connection conn){
         Tenant tenant = new Tenant();
@@ -172,7 +175,14 @@ public class Menu {
     }
     /***
      * Prints Menu for Property Manager
-     * @return void
+     * 1. Record Visit Data
+     * 2. Record Lease Data
+     * 3. Record Move-out Data
+     *      a. Auto Set Move-out Date (12 months out from move-in date)
+     * 4. Add Person to a lease
+     *      a. Gives a list of inputs to ask person
+     *      b. First Name, Middle Initial, Last Name, Phone Number, Date of Birth
+     * @return int
      */
     public int printPropertyMenu(Connection conn){
         Scanner scnr = new Scanner(System.in);
@@ -267,8 +277,8 @@ public class Menu {
         //Make sure number is valid in Enterprise.java
 
     }
-    public void printCompanyMenu(){
-        /*
+    /***
+         * printCompanyMenu
          * 1. Add new property
          *      a. Randomly assign an ID (no duplicate)
          *      b. Address, City, Prop_State (Short for Property_State), Postal_Code, Price
@@ -277,7 +287,9 @@ public class Menu {
          *      d. Randomnly add ~5 apartments to each property 
          *          i. Each apartment should have randomnly set apartment id, monthly_rent, security_deposit, apt_size, bed, bath, and private amenities (optional)
          *              1. Private amenity options: LAUNDRY, PARKING, DISHWASHER and add monthly charge
-         */
+         * @return void
+     */
+    public void printCompanyMenu(){
         System.out.println("Company Manager ID: 9995");
         System.out.println("Company Manager Menu");
         System.out.println("1. Add new Property");
@@ -286,6 +298,7 @@ public class Menu {
         //make sure to utilize Randomize.java to create Property
     }
     /***
+     * printFinancialMenu
      * @return void
      */
     public void printFinancialMenu(){
@@ -304,6 +317,10 @@ public class Menu {
         System.out.println("2. Produce Financial Report");
         System.out.println("3. Exit Financial Manager Menu");
     }
+    /***
+    * propertyData Menu
+    * @return void
+    */
     public void propertyData(){
         /***
          * 1. Reads data about property
