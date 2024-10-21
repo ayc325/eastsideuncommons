@@ -1,5 +1,7 @@
 # Angela's Eastside Uncommons
 
+## Note: Oracle SQL account is deprecated
+
 ## How to run the code
 
 * Compile with `javac *.java`
