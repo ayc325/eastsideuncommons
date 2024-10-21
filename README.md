@@ -34,7 +34,7 @@
 
 ## Classes
 
-### Enterprise.java //make sure to change to username (note to self)
+### Enterprise.java
 
 * Main Method here!
 
