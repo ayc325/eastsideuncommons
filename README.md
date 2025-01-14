@@ -40,12 +40,20 @@
 
 ### Menu.java
 
-* 
+* All Menu print statements here.
 
 ### Tenant.java
 
+* All code regarding Tenant permissions here.
+
 ### Randomize.java
+
+* All code regarding randomizing data here.
 
 ### Validator.java
 
+* All code regarding validating data. Lots of regex things like matches in here.
+
 ### Test.java
+
+* like main method but for testing purposes only
